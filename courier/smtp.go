@@ -27,43 +27,63 @@ type smtpClient struct {
 }
 
 func newSMTP(ctx context.Context, deps Dependencies) *smtpClient {
-	uri := deps.CourierConfig(ctx).CourierSMTPURL()
+	deps.Logger().
+		WithField("message_id", "ahmetcan").
+		Debug("new STMP")
+	scheme, host, port, user, password, skipssl, disablestartttls := deps.CourierConfig(ctx).CourierSMTPParams()
+	deps.Logger().
+		WithField("message_id", "ahmetcan").
+		Debug("new STMP$" + string(host) + "$")
+	if host == "courier.smtp.host" {
+		uri := deps.CourierConfig(ctx).CourierSMTPURL()
 
-	password, _ := uri.User.Password()
-	port, _ := strconv.ParseInt(uri.Port(), 10, 0)
+		deps.Logger().
+			WithField("message_id", "ahmetcan").
+			Debug("new STMP url$" + string(uri.Host) + "$")
+		scheme = uri.Scheme
+		password, _ = uri.User.Password()
+		port = uri.Port()
+
+		user = uri.User.Username()
+
+		skipssl = uri.Query().Get("skip_ssl_verify")
+		disablestartttls = uri.Query().Get("disable_starttls")
+	}
+	port_, _ := strconv.ParseInt(port, 10, 0)
+	sslSkipVerify, _ := strconv.ParseBool(skipssl)
 
 	dialer := &gomail.Dialer{
-		Host:     uri.Hostname(),
-		Port:     int(port),
-		Username: uri.User.Username(),
+		Host:     host,
+		Port:     int(port_),
+		Username: user,
 		Password: password,
 
 		Timeout:      time.Second * 10,
 		RetryFailure: true,
 	}
 
-	sslSkipVerify, _ := strconv.ParseBool(uri.Query().Get("skip_ssl_verify"))
-
 	// SMTP schemes
 	// smtp: smtp clear text (with uri parameter) or with StartTLS (enforced by default)
 	// smtps: smtp with implicit TLS (recommended way in 2021 to avoid StartTLS downgrade attacks
 	//    and defaulting to fully-encrypted protocols https://datatracker.ietf.org/doc/html/rfc8314)
-	switch uri.Scheme {
+	switch scheme {
 	case "smtp":
 		// Enforcing StartTLS by default for security best practices (config review, etc.)
-		skipStartTLS, _ := strconv.ParseBool(uri.Query().Get("disable_starttls"))
+		skipStartTLS, _ := strconv.ParseBool(disablestartttls)
 		if !skipStartTLS {
 			// #nosec G402 This is ok (and required!) because it is configurable and disabled by default.
-			dialer.TLSConfig = &tls.Config{InsecureSkipVerify: sslSkipVerify, ServerName: uri.Hostname()}
+			dialer.TLSConfig = &tls.Config{InsecureSkipVerify: sslSkipVerify, ServerName: host}
 			// Enforcing StartTLS
 			dialer.StartTLSPolicy = gomail.MandatoryStartTLS
 		}
 	case "smtps":
 		// #nosec G402 This is ok (and required!) because it is configurable and disabled by default.
-		dialer.TLSConfig = &tls.Config{InsecureSkipVerify: sslSkipVerify, ServerName: uri.Hostname()}
+		dialer.TLSConfig = &tls.Config{InsecureSkipVerify: sslSkipVerify, ServerName: host}
 		dialer.SSL = true
 	}
-
+	deps.Logger().
+		WithField("message_id", "ahmetcan").
+		Debug("new STMP return")
 	return &smtpClient{
 		Dialer: dialer,
 
