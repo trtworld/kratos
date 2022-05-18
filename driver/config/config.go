@@ -62,6 +62,13 @@ const (
 	ViperKeyCourierSMTPURL                                   = "courier.smtp.connection_uri"
 	ViperKeyCourierSMTPClientCertPath                        = "courier.smtp.client_cert_path"
 	ViperKeyCourierSMTPClientKeyPath                         = "courier.smtp.client_key_path"
+	ViperKeyCourierSMTPSCHEME                                = "courier.smtp.scheme"
+	ViperKeyCourierSMTPHOST                                  = "courier.smtp.host"
+	ViperKeyCourierSMTPPORT                                  = "courier.smtp.port"
+	ViperKeyCourierSMTPUSER                                  = "courier.smtp.user"
+	ViperKeyCourierSMTPPASSWORD                              = "courier.smtp.password"
+	ViperKeyCourierSMTPSKIPSSL                               = "courier.smtp.skipssl"
+	ViperKeyCourierSMTPDISABLESTARTTTLS                      = "courier.smtp.disable_starttlsßß"
 	ViperKeyCourierTemplatesPath                             = "courier.template_override_path"
 	ViperKeyCourierTemplatesRecoveryInvalidEmail             = "courier.templates.recovery.invalid.email"
 	ViperKeyCourierTemplatesRecoveryValidEmail               = "courier.templates.recovery.valid.email"
@@ -242,6 +249,7 @@ type (
 		CourierSMTPURL() *url.URL
 		CourierSMTPClientCertPath() string
 		CourierSMTPClientKeyPath() string
+		CourierSMTPParams() (string, string, string, string, string, string, string)
 		CourierSMTPFrom() string
 		CourierSMTPFromName() string
 		CourierSMTPHeaders() map[string]string
@@ -785,6 +793,9 @@ func (p *Config) SelfAdminURL() *url.URL {
 
 func (p *Config) CourierSMTPURL() *url.URL {
 	return p.ParseURIOrFail(ViperKeyCourierSMTPURL)
+}
+func (p *Config) CourierSMTPParams() (string, string, string, string, string, string, string) {
+	return p.p.String(ViperKeyCourierSMTPSCHEME), p.p.String(ViperKeyCourierSMTPHOST), p.p.String(ViperKeyCourierSMTPPORT), p.p.String(ViperKeyCourierSMTPUSER), p.p.String(ViperKeyCourierSMTPPASSWORD), p.p.String(ViperKeyCourierSMTPSKIPSSL), p.p.String(ViperKeyCourierSMTPDISABLESTARTTTLS)
 }
 
 func (p *Config) SelfServiceFlowLoginUI() *url.URL {

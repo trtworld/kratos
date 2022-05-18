@@ -1513,6 +1513,41 @@
               "type": "string",
               "default": ""
             },
+            "scheme": {
+              "title": "SMTP Scheme",
+              "description": "",
+              "type": "string"
+            },
+            "host": {
+              "title": "SMTP Host",
+              "description": "",
+              "type": "string"
+            },
+            "port": {
+              "title": "SMTP Port",
+              "description": "",
+              "type": "string"
+            },
+            "user": {
+              "title": "SMTP User",
+              "description": "",
+              "type": "string"
+            },
+            "password": {
+              "title": "SMTP Password",
+              "description": "",
+              "type": "string"
+            },
+            "skipssl": {
+              "title": "SMTP Skipssl",
+              "description": "",
+              "type": "string"
+            },
+            "disable_starttls": {
+              "title": "SMTP disable_starttls",
+              "description": "",
+              "type": "string"
+            },
             "from_address": {
               "title": "SMTP Sender Address",
               "description": "The recipient of an email will see this as the sender address.",
