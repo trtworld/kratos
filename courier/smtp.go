@@ -49,14 +49,16 @@ func newSMTP(ctx context.Context, deps Dependencies) *smtpClient {
 		skipssl = uri.Query().Get("skip_ssl_verify")
 		disablestartttls = uri.Query().Get("disable_starttls")
 	}
+
+	localName := deps.CourierConfig(ctx).CourierSMTPLocalName()
 	port_, _ := strconv.ParseInt(port, 10, 0)
 	sslSkipVerify, _ := strconv.ParseBool(skipssl)
-
 	dialer := &gomail.Dialer{
-		Host:     host,
-		Port:     int(port_),
-		Username: user,
-		Password: password,
+		Host:      host,
+		Port:      int(port_),
+		Username:  user,
+		Password:  password,
+		LocalName: localName,
 
 		Timeout:      time.Second * 10,
 		RetryFailure: true,

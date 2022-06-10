@@ -77,6 +77,7 @@ const (
 	ViperKeyCourierSMTPFrom                                  = "courier.smtp.from_address"
 	ViperKeyCourierSMTPFromName                              = "courier.smtp.from_name"
 	ViperKeyCourierSMTPHeaders                               = "courier.smtp.headers"
+	ViperKeyCourierSMTPLocalName                             = "courier.smtp.local_name"
 	ViperKeyCourierSMSRequestConfig                          = "courier.sms.request_config"
 	ViperKeyCourierSMSEnabled                                = "courier.sms.enabled"
 	ViperKeyCourierSMSFrom                                   = "courier.sms.from"
@@ -253,6 +254,7 @@ type (
 		CourierSMTPFrom() string
 		CourierSMTPFromName() string
 		CourierSMTPHeaders() map[string]string
+		CourierSMTPLocalName() string
 		CourierSMSEnabled() bool
 		CourierSMSFrom() string
 		CourierSMSRequestConfig() json.RawMessage
@@ -888,6 +890,10 @@ func (p *Config) CourierSMTPFrom() string {
 
 func (p *Config) CourierSMTPFromName() string {
 	return p.p.StringF(ViperKeyCourierSMTPFromName, "")
+}
+
+func (p *Config) CourierSMTPLocalName() string {
+	return p.p.StringF(ViperKeyCourierSMTPLocalName, "localhost")
 }
 
 func (p *Config) CourierTemplatesRoot() string {
